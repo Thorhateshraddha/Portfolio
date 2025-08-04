@@ -1,0 +1,134 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Contact Me</title>
+<style>
+  /* Your existing CSS or add this */
+  body {
+    font-family: Arial, sans-serif;
+    background: #f5f7fa;
+    margin: 0;
+    padding: 0 20px;
+  }
+  .container {
+    max-width: 600px;
+    margin: 40px auto;
+    background: white;
+    padding: 20px 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  }
+  h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 30px;
+  }
+  label {
+    display: block;
+    margin: 12px 0 6px;
+    font-weight: bold;
+    color: #555;
+  }
+  input[type="text"], input[type="email"], textarea {
+    width: 100%;
+    padding: 12px 10px;
+    border: 1.5px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+    resize: vertical;
+  }
+  textarea {
+    min-height: 120px;
+  }
+  button {
+    margin-top: 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 14px;
+    font-size: 1.1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.3s ease;
+  }
+  button:hover {
+    background-color: #0056b3;
+  }
+  .response-msg {
+    margin-top: 15px;
+    font-weight: 600;
+    text-align: center;
+  }
+  .response-msg.success {
+    color: green;
+  }
+  .response-msg.error {
+    color: red;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Contact Me</h2>
+  <form id="contactForm">
+    <label for="name">Name *</label>
+    <input type="text" id="name" name="name" required placeholder="Your full name" />
+
+    <label for="email">Email *</label>
+    <input type="email" id="email" name="email" required placeholder="Your email address" />
+
+    <label for="message">Message *</label>
+    <textarea id="message" name="message" required placeholder="Write your message here..."></textarea>
+
+    <button type="submit">Send Message</button>
+  </form>
+
+  <div id="responseMsg" class="response-msg"></div>
+</div>
+
+<script>
+  const form = document.getElementById('contactForm');
+  const responseMsg = document.getElementById('responseMsg');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const formData = {
+      name: form.name.value.trim(),
+      email: form.email.value.trim(),
+      message: form.message.value.trim()
+    };
+
+    responseMsg.textContent = '';
+    responseMsg.className = 'response-msg';
+
+    try {
+      const response = await fetch('/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        responseMsg.textContent = data.message;
+        responseMsg.classList.add('success');
+        form.reset();
+      } else {
+        responseMsg.textContent = data.message || 'Error sending message.';
+        responseMsg.classList.add('error');
+      }
+    } catch (error) {
+      responseMsg.textContent = 'Network error. Please try again later.';
+      responseMsg.classList.add('error');
+    }
+  });
+</script>
+
+</body>
+</html>
